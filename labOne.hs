@@ -1,48 +1,49 @@
--- LAB 1: COMPLEX NUMBERS
+-- QUESTION 1:
 
-{-
-The purpose of this lab is to give you training in gradually developing a program
-consisting of a variety of functions. As this is the first laboratory, you will receive help
-with which functions to be manufactured and in what order. In a sharp case, of course
-the division into functions, and how they are based on each other, a very important part of
-development. In the same way, we should be aware that certain parts of the laboratory would
-be able to be solved in a better way by using concepts that we will learn later in
-the course, such as own types, recursion and higher order functions. 
--}
+makeRec :: Floating a => a -> a -> (Char,a,a)
+makeRec a b = ('R',a,b) -- z = a + b*i
 
--- z = a + bi (rectangular form)
-{- z = re^(iv) = |z|(cos(v)+i*sin(v)), let z = a+bi and |z| = sqrt(x^2 + y^2)
-   the form above is called: "polar form". r is the length of the radius from the 
-   origin whereas the angle v is the angle found between the positive x axis
-   and the radius r. 
--}
+makePol :: (Floating a, Ord a) => a -> a -> (Char,a,a)
+makePol r v 
+    | v < 0 || v>2*pi = error "Please, insert an angle v in the range of [0,2pi]"
+    | r < 0 = error "Please, insert a distance r ub the range of r>= 0"
+    | otherwise = ('P', r, v) -- z = re^(iv)
 
--- RELATIONSSHIPS BETWEEN RECTANGULAR AND POLAR FORM
--- a) a = rcos(v)
--- b) b = rsin(v)
--- c) r = sqrt(a^2 + b^2)
--- d) v = arctan(b/a) if a>0 sqrt(2)|pi/4
--- e) v = arctan(b/a)+pi if a>0
--- f) v = pi/2 if x = 0 and y>=0
--- g) v = 3pi/2 if x=0 and y<0
+first :: (a, b, c) -> a
+first (x, _, _) = x
 
--- format
--- (<type>,Floating,Floating), where for type we can choose between R and P.
--- I.e. R = Rectangular form and P = Polar form. 
--- For the R form, Floating equals the real values of the imaginary number, a && b.
--- in z = a+bi. In the polar form, the first float represents r and the second 
--- represents the angle v.
--- EXAMPLE: (”R”, 1.0, 1.0) and (”P”, 1.4142, 0.7854)
+second :: (a, b, c) -> b
+second (_, y, _) = y
 
--- The Program should NOT "just work". 
--- Quite the opposite is true. The code should upload a HIGH STANDARD.
--- a) aim to generate small but clear functions
--- b) use existing functions when creating new ones
--- c) all function declarations should be preceeded by a typesignature
--- d) only break apart the complex numbers by the use of pattern-matching when needed
--- e) use anonymous variables if possible
--- f) utilize the error command
+third :: (a, b, c) -> c
+third (_, _, z) = z
 
+-- QUESTION 2:
+getRe :: (Char, Float, Float) -> Float
+getRe threeTuple
+    | first threeTuple == 'R' = second threeTuple
+    | first threeTuple == 'P' = second threeTuple * cos (third threeTuple)
+    | otherwise = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
+getIm :: (Char, Float, Float) -> Float
+getIm threeTuple
+    | first threeTuple == 'R' = third threeTuple
+    | first threeTuple == 'P' = second threeTuple * sin (third threeTuple)
+    | otherwise = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
+getDist :: (Char, Float, Float) -> Float
+getDist threeTuple 
+    | first threeTuple == 'R' = sqrt(second threeTuple ^2 + third threeTuple ^2)
+    | first threeTuple == 'P' = second threeTuple
+    | otherwise = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
+getAngle :: (Char, Float, Float) -> Float
+getAngle threeTuple
+    | first threeTuple == 'R' && third threeTuple > 0 = atan2 (third threeTuple) (second threeTuple)
+    | first threeTuple == 'R' && third threeTuple < 0 = 2*pi - abs(atan2 (third threeTuple) (second threeTuple))
+    | first threeTuple == 'R' && second threeTuple > 0 && third threeTuple == 0 = 0 
+    | first threeTuple == 'R' && second threeTuple < 0 && third threeTuple == 0 = pi
+    | first threeTuple == 'P' && third threeTuple > 0 = third threeTuple
+    | otherwise = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
+
+-- QUESTION 3:
