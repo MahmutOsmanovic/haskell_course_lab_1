@@ -70,7 +70,7 @@ compAdd :: (Char, Float, Float) -> String
 
 
 compSub :: (Char, Float, Float) -> String
-compSub 
+--compSub 
 
 compMult :: (Char, Float, Float) -> String
 compMult
