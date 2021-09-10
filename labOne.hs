@@ -43,16 +43,6 @@ getAngle ('P',r,v)
     | v > 0 = 0
 getAngle _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
-
-getAngle :: (Char, Float, Float) -> Float
-getAngle threeTuple
-    | first threeTuple == 'R' && third threeTuple > 0 = atan2 (third threeTuple) (second threeTuple)
-    | first threeTuple == 'R' && third threeTuple < 0 = 2*pi - abs(atan2 (third threeTuple) (second threeTuple))
-    | first threeTuple == 'R' && second threeTuple > 0 && third threeTuple == 0 = 0 
-    | first threeTuple == 'R' && second threeTuple < 0 && third threeTuple == 0 = pi
-    | first threeTuple == 'P' && third threeTuple > 0 = third threeTuple
-    | otherwise = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
-
 -- QUESTION 3:
 toRec :: (Char, Float, Float) -> (Char, Float, Float)
 toRec ('R',a,b) = ('R',a,b)
