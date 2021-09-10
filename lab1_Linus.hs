@@ -48,3 +48,5 @@ toPol ('R',a,b) =
     in ('P',r,v)
 toPol ('P',r,v) = ('P',r,v)
 toPol _ = error "Invalid argument"
+
+--Task 4
