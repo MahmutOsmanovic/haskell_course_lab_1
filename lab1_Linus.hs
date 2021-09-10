@@ -27,8 +27,15 @@ getDist ('R',a,b) = sqrt (a^2 + b^2)
 getDist ('P',r,_) = r
 getDist _ = error "Invalid argument"
 
+--TODO fix getAngle
 getAngle :: Cplex -> Double
-getAngle ('R',a,b) = abs ( atan (b / a))
+getAngle ('R',a,b)
+    | a > 0 = atan (b / a)          --given in pdf
+    | a == 0 && b > 0 = pi / 2      --given in pdf
+    | a == 0 && b < 0 = 1.5 * pi    --given in pdf
+    | a == 0 && b == 0 = 0
+    | a > 0 && b == 0 = 0
+    | a < 0 && b == 0 = 0
 getAngle ('P',_,v) = v
 getAngle _ = error "Invalid argument"
 
@@ -41,6 +48,7 @@ toRec ('P',r,v) =
     in ('R',a,b)
 toRec _ = error "Invalid argument"
 
+--TODO probably faulty given the problem with getAngle
 toPol :: Cplex -> Cplex
 toPol ('R',a,b) = 
     let r = sqrt (a^2 + b^2)
