@@ -1,16 +1,17 @@
+{-# OPTIONS_GHC -Wno-overlapping-patterns #-}
 type ThreeTuple = (Char, Double, Double)
 
--- QUESTION 1:
+-- TASK 1:
 makeRec :: Double -> Double -> ThreeTuple
 makeRec a b = ('R',a,b) -- z = a + b*i
 
 makePol :: Double -> Double -> ThreeTuple
-makePol r v 
+makePol r v
     | v < 0 || v>2*pi = error "Please, insert an angle v in the range of [0,2pi]"
     | r < 0 = error "Please, insert a distance r ub the range of r>= 0"
     | otherwise = ('P',r,v) -- z = re^(iv)
 
--- QUESTION 2:
+-- TASK 2:
 getRe :: ThreeTuple -> Double
 getRe ('R',a,_) = a
 getRe ('P',r,v) = r * cos v
@@ -27,7 +28,7 @@ getDist ('P',r,_) = r
 getDist _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
 getAngle :: ThreeTuple -> Double
-getAngle ('R',a,b) 
+getAngle ('R',a,b)
     | a == 0 && b == 0 = 0
     | a > 0 && b == 0 = 0
     | a < 0 && b == 0 = pi
@@ -37,7 +38,7 @@ getAngle ('P',r,v)
     | v > 0 = 0
 getAngle _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
--- QUESTION 3:
+-- TASK 3:
 toRec :: ThreeTuple -> ThreeTuple
 toRec tupR@('R',a,b) = tupR
 toRec tupP@('P',r,v) = makeRec (getRe tupP) (getIm tupP)
@@ -48,4 +49,38 @@ toPol tupR@('R',a,b) = makePol (getDist tupR) (getAngle tupR)
 toPol tupP@('P',r,v) = tupP
 toPol _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
--- QUESTION 4
+-- TASK 4
+compAdd :: ThreeTuple -> ThreeTuple -> ThreeTuple
+compAdd ('R',a,b) ('R',c,d) = makeRec (a+c) (b+d)
+compAdd im@('P',r,v) ('R',c,d) = makeRec (getRe im + c) (getIm im + d)
+compAdd ('R',a,b) im@('P',r,v) = makeRec (a + getRe im) (b + getIm im)
+compAdd im1@('R',r1,v1) im2@('R',r2,v2) = makeRec (getRe im1 + getRe im2) (getIm im1 + getIm im2)
+compAdd _ _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
+
+compSub :: ThreeTuple -> ThreeTuple -> ThreeTuple
+compSub ('R',a,b) ('R',c,d) = ('R',a-c,b-d)
+compSub im@('P',r,v) ('R',c,d) = makeRec (getRe im - c) (getIm im - d)
+compSub ('R',a,b) im@('P',r,v) = makeRec (a - getRe im) (b - getIm im)
+compSub im1@('R',r1,v1) im2@('R',r2,v2) = makeRec (getRe im1 - getRe im2) (getIm im1 - getIm im2)
+compSub _ _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
+
+compMult :: ThreeTuple -> ThreeTuple -> ThreeTuple
+compMult re1@('R',a,b) re2@('R',c,d) = makePol (getDist re1 * getDist re2) (getAngle re1 + getAngle re2)
+compMult ('P',r,v) re@('R',c,d) = makePol (r * getDist re) (v + getAngle re)
+compMult re@('R',a,b) ('P',r,v) = makePol (getDist re * r) (getAngle re + v)
+compMult ('P',r1,v1) ('P',r2,v2) = makePol (r1 * r2) (v1 + v2)
+compMult _ _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
+
+compDiv :: ThreeTuple -> ThreeTuple -> ThreeTuple
+compDiv re1@('R',a,b) re2@('R',c,d) = makePol (getDist re1 / getDist re2) (getAngle re1 - getAngle re2)
+compDiv ('P',r,v) re@('R',c,d) = makePol (r / getDist re) (v - getAngle re)
+compDiv re@('R',a,b) ('P',r,v) = makePol (getDist re / r) (getAngle re - v)
+compDiv ('P',r1,v1) ('P',r2,v2) = makePol (r1 / r2) (v1 - v2)
+compDiv _ _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
+
+-- TASK 5
+{-type IntegerPair = (Integer,Integer) 
+genCompList :: IntegerPair -> IntegerPair -> ThreeTuple
+getCompList = 
+-}
+     
