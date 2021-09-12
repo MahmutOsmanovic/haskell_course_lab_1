@@ -27,34 +27,74 @@ getDist ('R',a,b) = sqrt (a^2 + b^2)
 getDist ('P',r,_) = r
 getDist _ = error "Invalid argument"
 
---TODO fix getAngle
 getAngle :: Cplex -> Double
 getAngle ('R',a,b)
-    | a > 0 = atan (b / a)          --given in pdf
-    | a == 0 && b > 0 = pi / 2      --given in pdf
-    | a == 0 && b < 0 = 1.5 * pi    --given in pdf
-    | a == 0 && b == 0 = 0
-    | a > 0 && b == 0 = 0
-    | a < 0 && b == 0 = 0
+    | a == 0 && b == 0 = 0                      --edge case
+    | a > 0 && b == 0 = 0                       --edge case
+    | a < 0 && b == 0 = pi                      --edge case
+    | a == 0 && b > 0 = pi / 2                  --edge case
+    | a == 0 && b < 0 = 1.5 * pi                --edge case
+    | a > 0 && b > 0 = atan(b / a)              --quadrant 1
+    | a < 0 && b > 0 = pi - atan(b / a)         --quadrant 2
+    | a < 0 && b < 0 = 1.5 * pi - atan(a / b)   --quadrant 3
+    | a > 0 && b < 0 = 2 * pi - atan(b / a)     --quadrant 4
 getAngle ('P',_,v) = v
 getAngle _ = error "Invalid argument"
 
 --Task 3
 toRec :: Cplex -> Cplex
 toRec ('R',a,b) = ('R',a,b)
-toRec ('P',r,v) =
-    let a = r * cos v
-        b = r * sin v
+toRec pol@('P',r,v) =
+    let a = getRe pol
+        b = getIm pol
     in ('R',a,b)
 toRec _ = error "Invalid argument"
 
---TODO probably faulty given the problem with getAngle
 toPol :: Cplex -> Cplex
-toPol ('R',a,b) = 
-    let r = sqrt (a^2 + b^2)
-        v = abs (atan (b / a))
+toPol rect@('R',a,b) = 
+    let r = getDist rect
+        v = getAngle rect
     in ('P',r,v)
 toPol ('P',r,v) = ('P',r,v)
 toPol _ = error "Invalid argument"
 
 --Task 4
+compAdd :: Cplex -> Cplex -> Cplex
+compAdd ('R',a,b) ('R',c,d) = ('R',a + c,b + d)
+compAdd ('R',a,b) pol@('P',r,v) = ('R',a + getRe pol,b + getIm pol)
+compAdd pol@('P',r,v) ('R',a,b) = ('R',a + getRe pol, b + getIm pol)
+compAdd pol1@('P',r1,v1) pol2@('P',r2,v2) = ('R',(getRe pol1) + getRe pol2,(getIm pol1) + getIm pol2)
+compAdd _ _ = error "Invalid argument/s"
+
+compSub :: Cplex -> Cplex -> Cplex
+compSub ('R',a,b) ('R',c,d) = ('R',a - c,b - d)
+compSub ('R',a,b) pol@('P',r,v) = ('R',a - getRe pol,b - getIm pol)
+compSub pol@('P',r,v) ('R',a,b) = ('R',a - getRe pol, b - getIm pol)
+compSub pol1@('P',r1,v1) pol2@('P',r2,v2) = ('R',(getRe pol1) - getRe pol2,(getIm pol1) - getIm pol2)
+compSub _ _ = error "Invalid argument/s"
+
+compMult :: Cplex -> Cplex -> Cplex
+compMult rect1@('R',a,b) rect2@('R',c,d) = 
+    let pol1 = toPol rect1
+        pol2 = toPol rect2
+    in ('P',(getDist pol1) * getDist pol2, (getAngle pol1) + getAngle pol2)
+compMult rect@('R',a,b) ('P',r,v) = 
+    let pol = toPol rect
+    in ('P',r * getDist pol,v + getAngle pol)
+compMult ('P',r,v) rect@('R',a,b) = 
+    let pol = toPol rect
+    in ('P',r * getDist rect,v + getAngle pol)
+compMult _ _ = error "Invalid argument/s"
+
+compDiv :: Cplex -> Cplex -> Cplex
+compDiv rect1@('R',a,b) rect2@('R',c,d) = 
+    let pol1 = toPol rect1
+        pol2 = toPol rect2
+    in ('P',(getDist pol1) / getDist pol2, (getAngle pol1) - getAngle pol2)
+compDiv rect@('R',a,b) ('P',r,v) = 
+    let pol = toPol rect
+    in ('P',r / getDist pol,v - getAngle pol)
+compDiv ('P',r,v) rect@('R',a,b) = 
+    let pol = toPol rect
+    in ('P',r / getDist rect,v - getAngle pol)
+compDiv _ _ = error "Invalid argument/s"
