@@ -35,9 +35,9 @@ getAngle ('R',a,b)
     | a == 0 && b > 0 = pi / 2                  --edge case
     | a == 0 && b < 0 = 1.5 * pi                --edge case
     | a > 0 && b > 0 = atan(b / a)              --quadrant 1
-    | a < 0 && b > 0 = pi - atan(b / a)         --quadrant 2
+    | a < 0 && b > 0 = pi - atan(b / a)         --quadrant 2    --TODO fix
     | a < 0 && b < 0 = 1.5 * pi - atan(a / b)   --quadrant 3
-    | a > 0 && b < 0 = 2 * pi - atan(b / a)     --quadrant 4
+    | a > 0 && b < 0 = 2 * pi - atan(b / a)     --quadrant 4    --TODO fix
 getAngle ('P',_,v) = v
 getAngle _ = error "Invalid argument"
 
