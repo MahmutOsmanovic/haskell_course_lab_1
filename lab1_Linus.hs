@@ -126,3 +126,39 @@ compDiv ('P',r1,v1) ('P',r2,v2) =                           --tested
         angle = angleRem (v1 - v2)
     in ('P',distance,angle)
 compDiv _ _ = error "Invalid argument/s"                    --tested
+
+--Task 5
+genCompList :: (Double,Double) -> (Double,Double) -> [Cplex]
+genCompList (a,b) (c,d) =                                       --tested
+    if a > b || c > d then error "Invalid range/s"
+    else
+        let xList = [a..b]
+            yList = [c..d]
+        in [ ('R',x,y) | x <- xList, y <- yList]
+
+listToPol :: [Cplex] -> [Cplex]
+listToPol list = [ toPol t | t <- list]         --tested
+
+filterLengths :: Double -> [Cplex] -> [Cplex]
+filterLengths k xs = [ t | t <- xs, getDist t <= k]     --tested
+
+findQuadrant :: Cplex -> Int
+findQuadrant ('R',a,b)                              --tested
+    | a == 0 || b == 0 = error "No quadrant"
+    | a > 0 && b > 0 = 1
+    | a < 0 && b > 0 = 2
+    | a < 0 && b < 0 = 3
+    | a > 0 && b < 0 = 4
+findQuadrant ('P',_,v)                              --tested
+    | v == 0 || v == pi / 2 || v == pi || v == 1.5 * pi || v == 2 * pi = error "No quadrant"
+    | v < pi / 2 = 1
+    | v < pi = 2
+    | v < 1.5 * pi = 3
+    | v < 2 * pi = 4
+findQuadrant _ = error "Invalid argument"           --tested
+
+filterQuadrant :: Int -> [Cplex] -> [Cplex]
+filterQuadrant m xs =                                   --tested
+    if m > 4 || m < 1 then error "Invalid quadrant"
+    else
+        [t | t <- xs, findQuadrant t == m]
