@@ -1,4 +1,4 @@
-## <ins> **LAB 1: COMPLEX NUMBERS** </ins>
+## <ins> **LAB 1: Compelx Numbers** </ins>
 
 The purpose of this lab is to give you training in gradually developing a program
 consisting of a variety of functions. As this is the first laboratory, you will receive help
@@ -14,7 +14,7 @@ z = a + bi (rectangular form)
    origin whereas the angle v is the angle found between the positive x axis
    and the radius r. 
 
-#### <ins> RELATIONSSHIPS BETWEEN RECTANGULAR AND POLAR FORM <ins>
+#### <ins> Relationships between rectangular and polar form <ins>
 
 a) a = rcos(v)
 
@@ -37,7 +37,7 @@ g) v = 3pi/2 if x=0 and y<0
 The Program should **NOT** "just work". 
 Quite the opposite is true. The code should upload a **HIGH STANDARD**.
 
-### <ins> **High standard** <ins>:  
+### <ins> **High standard** <ins>  
 a) aim to generate small but clear functions
    
 b) use existing functions when creating new ones
