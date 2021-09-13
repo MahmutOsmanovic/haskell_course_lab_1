@@ -9,13 +9,12 @@ be able to be solved in a better way by using concepts that we will learn later 
 the course, such as own types, recursion and higher order functions. 
 
 z = a + bi (rectangular form)
-   ```math 
-   z = re^(iv) = |z|(cos(v)+i*sin(v)), let z = a+bi and |z| = sqrt(x^2 + y^2)```
+   z = re^(iv) = |z|(cos(v)+i*sin(v)), let z = a+bi and |z| = sqrt(x^2 + y^2)
    the form above is called: "polar form". r is the length of the radius from the 
    origin whereas the angle v is the angle found between the positive x axis
    and the radius r. 
 
-RELATIONSSHIPS BETWEEN RECTANGULAR AND POLAR FORM
+# RELATIONSSHIPS BETWEEN RECTANGULAR AND POLAR FORM
 
 a) a = rcos(v)
 
@@ -35,9 +34,10 @@ g) v = 3pi/2 if x=0 and y<0
    
 &#8594; EXAMPLE: (”R”, 1.0, 1.0) and (”P”, 1.4142, 0.7854)
 
-The Program should NOT "just work". 
-Quite the opposite is true. The code should upload a HIGH STANDARD.
-   
+The Program should **NOT** "just work". 
+Quite the opposite is true. The code should upload a **HIGH STANDARD**.
+
+# **High standard**:  
 a) aim to generate small but clear functions
    
 b) use existing functions when creating new ones
