@@ -1,4 +1,4 @@
-## **LAB 1: COMPLEX NUMBERS**
+## <ins> **LAB 1: COMPLEX NUMBERS** </ins>
 
 The purpose of this lab is to give you training in gradually developing a program
 consisting of a variety of functions. As this is the first laboratory, you will receive help
