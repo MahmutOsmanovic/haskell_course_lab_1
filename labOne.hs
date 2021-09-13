@@ -27,8 +27,7 @@ getDist _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float
 
 getAngle :: Complex -> Double
 getAngle ('R',a,b) --check this
-    | a == 0 && b == 0 = 0 -- edge case
-    | a > 0 && b == 0 = 0 -- edge case
+    | a == 0 && b == 0 || a > 0 && b == 0 = 0 -- edge case
     | a < 0 && b == 0 = pi -- edge case
     | b > 0 = atan2 b a -- (0,pi)
     | b < 0 = 2*pi - abs(atan2 b a) -- (pi,2pi) == (pi,2pi)
