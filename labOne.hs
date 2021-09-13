@@ -1,4 +1,6 @@
 {-# OPTIONS_GHC -Wno-overlapping-patterns #-}
+import GHC.Real (Integral)
+import GHCi.FFI (C_ffi_cif)
 type ThreeTuple = (Char, Double, Double)
 
 -- TASK 1:
@@ -7,7 +9,7 @@ makeRec a b = ('R',a,b) -- z = a + b*i
 
 makePol :: Double -> Double -> ThreeTuple
 makePol r v
-    | v < 0 || v>2*pi = error "Please, insert an angle v in the range of [0,2pi]"
+    | v < 0 || v>2*pi = error "Please, insert an angle v in the range of [0,2*pi]"
     | r < 0 = error "Please, insert a distance r ub the range of r>= 0"
     | otherwise = ('P',r,v) -- z = re^(iv)
 
@@ -29,13 +31,13 @@ getDist _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float
 
 getAngle :: ThreeTuple -> Double
 getAngle ('R',a,b)
-    | a == 0 && b == 0 = 0
-    | a > 0 && b == 0 = 0
-    | a < 0 && b == 0 = pi
-    | b > 0 = atan2 b a
-    | b < 0 = 2*pi - abs(atan2 b a)
+    | a == 0 && b == 0 = 0 -- edge case
+    | a > 0 && b == 0 = 0 -- edge case
+    | a < 0 && b == 0 = pi -- edge case
+    | b > 0 = atan2 b a -- (0,pi)
+    | b < 0 = 2*pi - abs(atan2 b a) -- (pi,2pi) == (pi,2pi)
 getAngle ('P',r,v)
-    | v > 0 = 0
+    | v > 0 = v
 getAngle _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
 -- TASK 3:
@@ -79,8 +81,36 @@ compDiv ('P',r1,v1) ('P',r2,v2) = makePol (r1 / r2) (v1 - v2)
 compDiv _ _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
 -- TASK 5
-{-type IntegerPair = (Integer,Integer) 
-genCompList :: IntegerPair -> IntegerPair -> ThreeTuple
-getCompList = 
--}
-     
+type IntegerPair = (Integer,Integer)
+genCompList :: IntegerPair -> IntegerPair -> [ThreeTuple]
+genCompList p1 p2 = [('R',fromIntegral re, fromIntegral im)| re <- [fst p1 .. snd p1], im <- [fst p2 .. snd p2]]
+genCompList _ _ = error "Please, enter some valid input"
+
+listToPol :: [ThreeTuple] -> [ThreeTuple]
+listToPol inList = [pol | threeTuple <- inList, let pol = makePol (getDist threeTuple) (getAngle threeTuple)]
+listToPol _ = error "Please, enter some valid input"
+
+filterLengths :: Double -> [ThreeTuple] -> [ThreeTuple]
+filterLengths k xs = [cplex | cplex <- xs, getDist cplex <= k]
+filterLengths _ _ = error "Please, enter some valid input"
+
+filterQuadrant :: Int -> [ThreeTuple] -> [ThreeTuple]
+filterQuadrant m inList = 
+    if m<1 || m>4 then error "Invalid Quadrant"
+    else
+        [threeTuple | threeTuple <- inList, isInQuadM threeTuple == m]
+
+isInQuadM :: ThreeTuple -> Int
+isInQuadM ('R',a,b)
+    | a > 0 && b > 0 = 1
+    | a < 0 && b > 0 = 2
+    | a < 0 && b < 0 = 3
+    | a > 0 && b < 0 = 4
+    | otherwise = 42 -- not inside any quad
+isInQuadM ('P',_,v)
+    | v > 0 && v < pi/2 = 1
+    | v > pi/2 && v < pi = 2
+    | v > pi && v < 1.5*pi = 3
+    | v > 1.5*pi && v < 2*pi = 4 
+    | otherwise = 42 -- not inside any quad
+isInQuadM _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
