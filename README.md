@@ -1,4 +1,4 @@
-## <ins> **LAB 1: Compelx Numbers** </ins>
+## <ins> **LAB 1: Complex Numbers** </ins>
 
 The purpose of this lab is to give you training in gradually developing a program
 consisting of a variety of functions. As this is the first laboratory, you will receive help
