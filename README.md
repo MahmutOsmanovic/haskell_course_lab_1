@@ -31,9 +31,9 @@ f) v = pi/2 if x = 0 and y>=0
 
 g) v = 3pi/2 if x=0 and y<0
 
-- Item 1 format: (<type>,Floating,Floating), where for type we can choose between R and P. I.e. R = Rectangular form and P = Polar form. For the R form, Floating equals the real values of the imaginary number, a && b. In z = a+bi. In the polar form, the first float represents r and the second represents the angle v.
+- format: (<type>,Floating,Floating), where for type we can choose between R and P. I.e. R = Rectangular form and P = Polar form. For the R form, Floating equals the real values of the imaginary number, a && b. In z = a+bi. In the polar form, the first float represents r and the second represents the angle v.
    
--- EXAMPLE: (”R”, 1.0, 1.0) and (”P”, 1.4142, 0.7854)
+&#8594; EXAMPLE: (”R”, 1.0, 1.0) and (”P”, 1.4142, 0.7854)
 
 The Program should NOT "just work". 
 Quite the opposite is true. The code should upload a HIGH STANDARD.
