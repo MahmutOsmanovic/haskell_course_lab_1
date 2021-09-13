@@ -1,4 +1,4 @@
--- LAB 1: COMPLEX NUMBERS
+## **LAB 1: COMPLEX NUMBERS**
 
 The purpose of this lab is to give you training in gradually developing a program
 consisting of a variety of functions. As this is the first laboratory, you will receive help
@@ -9,11 +9,11 @@ be able to be solved in a better way by using concepts that we will learn later 
 the course, such as own types, recursion and higher order functions. 
 
 z = a + bi (rectangular form)
-   z = re^(iv) = |z|(cos(v)+i*sin(v)), let z = a+bi and |z| = sqrt(x^2 + y^2)
+   ```math 
+   z = re^(iv) = |z|(cos(v)+i*sin(v)), let z = a+bi and |z| = sqrt(x^2 + y^2)```
    the form above is called: "polar form". r is the length of the radius from the 
    origin whereas the angle v is the angle found between the positive x axis
    and the radius r. 
-
 
 RELATIONSSHIPS BETWEEN RECTANGULAR AND POLAR FORM
 
@@ -31,7 +31,7 @@ f) v = pi/2 if x = 0 and y>=0
 
 g) v = 3pi/2 if x=0 and y<0
 
-- format: (<type>,Floating,Floating), where for type we can choose between R and P. I.e. R = Rectangular form and P = Polar form. For the R form, Floating equals the real values of the imaginary number, a && b. In z = a+bi. In the polar form, the first float represents r and the second represents the angle v.
+- Format: >(<type>,Floating,Floating), where for type we can choose between R and P. I.e. R =     >Rectangular form and P = Polar form. For the R form, Floating equals the real values of the >imaginary number, a && b. In z = a+bi. In the polar form, the first float represents r and the >second represents the angle v.
    
 &#8594; EXAMPLE: (”R”, 1.0, 1.0) and (”P”, 1.4142, 0.7854)
 
