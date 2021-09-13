@@ -1,4 +1,5 @@
-type Complex = (Char, Double, Double)
+type Complex = (Char, Double, Double) 
+type IntegerPair = (Integer,Integer)
 
 makeRec :: Double -> Double -> Complex
 makeRec a b = ('R',a,b) -- z = a + b*i
@@ -53,7 +54,6 @@ compMult z1 z2 = makePol (getDist z1 * getDist z2) (getAngle z1 + getAngle z2)
 compDiv :: Complex -> Complex -> Complex
 compDiv z1 z2 = makePol (getDist z1 / getDist z2) (getAngle z1 - getAngle z2)
 
-type IntegerPair = (Integer,Integer)
 genCompList :: IntegerPair -> IntegerPair -> [Complex]
 genCompList p1 p2 = [('R',fromIntegral re, fromIntegral im)| re <- [fst p1 .. snd p1], im <- [fst p2 .. snd p2]]
 
