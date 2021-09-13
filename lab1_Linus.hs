@@ -1,164 +1,84 @@
-type Cplex = (Char,Double,Double)
+type Cplex = (Char,Float,Float)
 
 --Task 1
-makeRec :: Double -> Double -> Cplex
-makeRec a b = ('R',a,b)                                 --tested
+makeRec :: Float -> Float -> Cplex
+makeRec a b = ('R',a,b)
 
-makePol :: Double -> Double -> Cplex
+makePol :: Float -> Float -> Cplex
 makePol r v
-    | v > 2 * pi = error "Angle greater than 2 * pi"    --tested
-    | v < 0 = error "Angle less than 0"                 --tested
-    | r < 0 = error "Negative radius"                   --tested
-    | otherwise = ('P',r,v)                             --tested
+    | v > 2 * pi = error "Angle greater than 2 * pi"
+    | v < 0 = error "Angle less than 0"
+    | r < 0 = error "Negative radius"
+    | otherwise = ('P',r,v)
 
 --Task 2
-getRe :: Cplex -> Double
-getRe ('R',a,_) = a                         --tested
-getRe ('P',r,v) = r * cos v                 --tested
-getRe _ = error "Invalid argument"          --tested
+getRe :: Cplex -> Float
+getRe ('R',a,_) = a
+getRe ('P',r,v) = r * cos v
+getRe _ = error "Invalid argument"
 
-getIm :: Cplex -> Double
-getIm ('R',_,b) = b                         --tested
-getIm ('P',r,v) = r * sin v                 --tested
-getIm _ = error "Invalid argument"          --tested
+getIm :: Cplex -> Float
+getIm ('R',_,b) = b
+getIm ('P',r,v) = r * sin v
+getIm _ = error "Invalid argument"
 
-getDist :: Cplex -> Double
-getDist ('R',a,b) = sqrt (a^2 + b^2)        --tested
-getDist ('P',r,_) = r                       --tested
-getDist _ = error "Invalid argument"        --tested
+getDist :: Cplex -> Float
+getDist ('R',a,b) = sqrt (a^2 + b^2)
+getDist ('P',r,_) = r
+getDist _ = error "Invalid argument"
 
-getAngle :: Cplex -> Double
+getAngle :: Cplex -> Float
 getAngle ('R',a,b)
-    | a == 0 && b == 0 = 0                      --edge case     --tested
-    | a > 0 && b == 0 = 0                       --edge case     --tested
-    | a < 0 && b == 0 = pi                      --edge case     --tested
-    | a == 0 && b > 0 = pi / 2                  --edge case     --tested
-    | a == 0 && b < 0 = 1.5 * pi                --edge case     --tested
-    | a > 0 && b > 0 = atan(b / a)              --quadrant 1    --tested
-    | a < 0 && b > 0 = pi - atan(y / x)         --quadrant 2    --tested
-    | a < 0 && b < 0 = 1.5 * pi - atan(x / y)   --quadrant 3    --tested
-    | a > 0 && b < 0 = 2 * pi - atan(y / x)     --quadrant 4    --tested
-        where x = abs a
-              y = abs b
-getAngle ('P',_,v) = v                                          --tested
-getAngle _ = error "Invalid argument"                           --tested
+    | a == 0 && b == 0 || a > 0 && b == 0 = 0           --edge case
+    | a < 0 && b == 0 = pi                              --edge case
+    | a == 0 && b > 0 = pi / 2                          --edge case
+    | a == 0 && b < 0 = 1.5 * pi                        --edge case
+    | a > 0 && b > 0 = atan(b / a)                      --quadrant 1
+    | a < 0 && b > 0 = pi - atan(b / abs a)             --quadrant 2
+    | a < 0 && b < 0 = 1.5 * pi - atan(abs a / abs b)   --quadrant 3
+    | a > 0 && b < 0 = 2 * pi - atan(abs b / a)         --quadrant 4
+getAngle ('P',_,v) = v
+getAngle _ = error "Invalid argument"
 
 --Task 3
 toRec :: Cplex -> Cplex
-toRec ('R',a,b) = ('R',a,b)             --tested
-toRec pol@('P',r,v) =                   --tested
-    let a = getRe pol
-        b = getIm pol
-    in ('R',a,b)
-toRec _ = error "Invalid argument"      --tested
+toRec c = ('R',getRe c,getIm c)
 
 toPol :: Cplex -> Cplex
-toPol rect@('R',a,b) =                  --tested
-    let r = getDist rect
-        v = getAngle rect
-    in ('P',r,v)
-toPol ('P',r,v) = ('P',r,v)             --tested
-toPol _ = error "Invalid argument"      --tested
+toPol c = ('P',getDist c,getAngle c)
 
 --Task 4
 compAdd :: Cplex -> Cplex -> Cplex
-compAdd ('R',a,b) ('R',c,d) = ('R',a + c,b + d)                                                             --tested
-compAdd ('R',a,b) pol@('P',r,v) = ('R',a + getRe pol,b + getIm pol)                                         --tested
-compAdd pol@('P',r,v) ('R',a,b) = ('R',getRe pol + a,getIm pol + b)                                         --tested
-compAdd pol1@('P',r1,v1) pol2@('P',r2,v2) = ('R',getRe pol1 + getRe pol2,getIm pol1 + getIm pol2)           --tested
-compAdd _ _ = error "Invalid argument/s"                                                                    --tested
+compAdd c1 c2 = ('R',getRe c1 + getRe c2,getIm c1 + getIm c2)
 
 compSub :: Cplex -> Cplex -> Cplex
-compSub ('R',a,b) ('R',c,d) = ('R',a - c,b - d)                                                             --tested
-compSub ('R',a,b) pol@('P',r,v) = ('R',a - getRe pol,b - getIm pol)                                         --tested
-compSub pol@('P',r,v) ('R',a,b) = ('R',getRe pol - a,getIm pol - b)                                         --tested
-compSub pol1@('P',r1,v1) pol2@('P',r2,v2) = ('R',getRe pol1 - getRe pol2,getIm pol1 - getIm pol2)           --tested
-compSub _ _ = error "Invalid argument/s"                                                                    --tested                                              
+compSub c1 c2 = ('R',getRe c1 - getRe c2,getIm c1 - getIm c2)
 
-angleRem :: Double -> Double        --makes sure the sum/difference of 2 angles is within [0,2*pi]          --tested
+angleRem :: Float -> Float        --makes sure the sum/difference of 2 angles is within [0,2*pi]
 angleRem v 
     | v > 2 * pi = v - 2 * pi
     | v < 0 = v + 2 * pi
     | otherwise = v
 
 compMult :: Cplex -> Cplex -> Cplex
-compMult rect1@('R',a,b) rect2@('R',c,d) =                  --tested
-    let pol1 = toPol rect1
-        pol2 = toPol rect2
-        distance = getDist pol1 * getDist pol2
-        angle = angleRem (getAngle pol1 + getAngle pol2)
-    in ('P',distance,angle)
-compMult rect@('R',a,b) ('P',r,v) =                         --tested
-    let pol = toPol rect
-        distance = r * getDist pol
-        angle = angleRem (v + getAngle pol)
-    in ('P',distance,angle)
-compMult ('P',r,v) rect@('R',a,b) =                         --tested
-    let pol = toPol rect
-        distance = r * getDist rect
-        angle = angleRem (v + getAngle pol) 
-    in ('P',distance,angle)
-compMult ('P',r1,v1) ('P',r2,v2) =                          --tested
-    let distance = r1 * r2
-        angle = angleRem (v1 + v2) 
-    in ('P',distance,angle)
-compMult _ _ = error "Invalid argument/s"                   --tested
+compMult c1 c2 = ('P',getDist c1 * getDist c2,angleRem (getAngle c1 + getAngle c2))
 
 compDiv :: Cplex -> Cplex -> Cplex
-compDiv rect1@('R',a,b) rect2@('R',c,d) =                   --tested
-    let pol1 = toPol rect1
-        pol2 = toPol rect2
-        distance = getDist pol1 / getDist pol2
-        angle = angleRem (getAngle pol1 - getAngle pol2)
-    in ('P',distance, angle)
-compDiv rect@('R',a,b) ('P',r,v) =                          --tested
-    let pol = toPol rect
-        distance = getDist pol / r
-        angle = angleRem (getAngle pol - v)
-    in ('P',distance,angle)
-compDiv ('P',r,v) rect@('R',a,b) =                          --tested
-    let pol = toPol rect
-        distance = r / getDist rect
-        angle = angleRem (v - getAngle pol)
-    in ('P',distance,angle)
-compDiv ('P',r1,v1) ('P',r2,v2) =                           --tested
-    let distance = r1 / r2
-        angle = angleRem (v1 - v2)
-    in ('P',distance,angle)
-compDiv _ _ = error "Invalid argument/s"                    --tested
+compDiv c1 c2 = ('P',getDist c1 / getDist c2,angleRem (getAngle c1 - getAngle c2))
 
 --Task 5
-genCompList :: (Double,Double) -> (Double,Double) -> [Cplex]
-genCompList (a,b) (c,d) =                                       --tested
-    if a > b || c > d then error "Invalid range/s"
-    else
-        let xList = [a..b]
-            yList = [c..d]
-        in [ ('R',x,y) | x <- xList, y <- yList]
+genCompList :: Integral n => (n,n) -> (n,n) -> [Cplex]
+genCompList (a,b) (c,d) = if a > b || c > d then error "Invalid range/s" else [('R',fromIntegral x,fromIntegral y)| x <- [a..b], y <- [c..d]]
 
 listToPol :: [Cplex] -> [Cplex]
-listToPol list = [ toPol t | t <- list]         --tested
+listToPol list = [ toPol t | t <- list]
 
-filterLengths :: Double -> [Cplex] -> [Cplex]
-filterLengths k xs = [ t | t <- xs, getDist t <= k]     --tested
+filterLengths :: Float -> [Cplex] -> [Cplex]
+filterLengths k xs = [ t | t <- xs, getDist t <= k]
 
 findQuadrant :: Cplex -> Int
-findQuadrant ('R',a,b)                              --tested
-    | a == 0 || b == 0 = error "No quadrant"
-    | a > 0 && b > 0 = 1
-    | a < 0 && b > 0 = 2
-    | a < 0 && b < 0 = 3
-    | a > 0 && b < 0 = 4
-findQuadrant ('P',_,v)                              --tested
-    | v == 0 || v == pi / 2 || v == pi || v == 1.5 * pi || v == 2 * pi = error "No quadrant"
-    | v < pi / 2 = 1
-    | v < pi = 2
-    | v < 1.5 * pi = 3
-    | v < 2 * pi = 4
-findQuadrant _ = error "Invalid argument"           --tested
+findQuadrant c = if getAngle c > 0 && getAngle c < pi / 2 then 1 else if getAngle c > pi / 2 && getAngle c < pi then 2 
+                 else if getAngle c > pi && getAngle c < 1.5 * pi then 3 else if getAngle c > 1.5 * pi && getAngle c < 2*pi then 4 else 42 --not inside a quadrant
 
 filterQuadrant :: Int -> [Cplex] -> [Cplex]
-filterQuadrant m xs =                                   --tested
-    if m > 4 || m < 1 then error "Invalid quadrant"
-    else
-        [t | t <- xs, findQuadrant t == m]
+filterQuadrant m xs = [t | t <- xs, m >= 1, m <= 4, findQuadrant t == m]
