@@ -64,22 +64,12 @@ filterLengths :: Double -> [Complex] -> [Complex]
 filterLengths k xs = [cplex | cplex <- xs, getDist cplex <= k]
 
 filterQuadrant :: Int -> [Complex] -> [Complex]
-filterQuadrant m inList =
-    if m<1 || m>4 then error "Invalid Quadrant"
-    else
-        [cplex | cplex <- inList, isInQuadM cplex == m]
+filterQuadrant m inList = [cplex | m>=1 && m<=4, cplex <- inList, isInQuadM cplex m]
 
-isInQuadM :: Complex -> Int
-isInQuadM ('R',a,b)
-    | a > 0 && b > 0 = 1
-    | a < 0 && b > 0 = 2
-    | a < 0 && b < 0 = 3
-    | a > 0 && b < 0 = 4
-    | otherwise = 42 -- not inside any quad
-isInQuadM ('P',_,v)
-    | v > 0 && v < pi/2 = 1
-    | v > pi/2 && v < pi = 2
-    | v > pi && v < 1.5*pi = 3
-    | v > 1.5*pi && v < 2*pi = 4 
-    | otherwise = 42 -- not inside any quad
-isInQuadM _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
+isInQuadM :: Complex -> Int -> Bool
+isInQuadM z m
+    | getRe z > 0 && getIm z > 0 && m == 1 = True
+    | getRe z < 0 && getIm z > 0 && m == 2 = True
+    | getRe z < 0 && getIm z < 0 && m == 3 = True
+    | getRe z > 0 && getIm z < 0 && m == 4 = True
+    | otherwise = False -- not inside any quad
