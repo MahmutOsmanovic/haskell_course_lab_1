@@ -14,7 +14,7 @@ z = a + bi (rectangular form)
    origin whereas the angle v is the angle found between the positive x axis
    and the radius r. 
 
-# RELATIONSSHIPS BETWEEN RECTANGULAR AND POLAR FORM
+#### RELATIONSSHIPS BETWEEN RECTANGULAR AND POLAR FORM
 
 a) a = rcos(v)
 
@@ -37,7 +37,7 @@ g) v = 3pi/2 if x=0 and y<0
 The Program should **NOT** "just work". 
 Quite the opposite is true. The code should upload a **HIGH STANDARD**.
 
-# **High standard**:  
+### **High standard**:  
 a) aim to generate small but clear functions
    
 b) use existing functions when creating new ones
