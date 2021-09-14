@@ -1,39 +1,43 @@
-type Complex = (Char, Double, Double) 
+type Complex = (Char, Float, Float) 
 type IntegerPair = (Integer,Integer)
 
-makeRec :: Double -> Double -> Complex
+makeRec :: Float -> Float -> Complex
 makeRec a b = ('R',a,b) -- z = a + b*i
 
-makePol :: Double -> Double -> Complex
+makePol :: Float -> Float -> Complex
 makePol r v
     | v < 0 || v>2*pi = error "Please, insert an angle v in the range of [0,2*pi]"
     | r < 0 = error "Please, insert a distance r ub the range of r>= 0"
     | otherwise = ('P',r,v) -- z = re^(iv)
 
-getRe :: Complex -> Double
+getRe :: Complex -> Float
 getRe ('R',a,_) = a
 getRe ('P',r,v) = r * cos v
 getRe _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
-getIm :: Complex -> Double
+getIm :: Complex -> Float
 getIm ('R',_,b) = b
 getIm ('P',r,v) = r * sin v
 getIm _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
-getDist :: Complex -> Double
+getDist :: Complex -> Float
 getDist ('R',a,b) = sqrt(a ^2 + b ^2)
 getDist ('P',r,_) = r
 getDist _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
 
-getAngle :: Complex -> Double
+getAngle :: Complex -> Float
 getAngle ('R',a,b) --check this
     | a == 0 && b == 0 || a > 0 && b == 0 = 0 -- edge case
     | a < 0 && b == 0 = pi -- edge case
     | b > 0 = atan2 b a -- (0,pi)
     | b < 0 = 2*pi - abs(atan2 b a) -- (pi,2pi) == (pi,2pi)
-getAngle ('P',r,v)
-    | v > 0 = v
-getAngle _ = error "Invalid format. Correct format:\n \t('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle"
+getAngle ('P',r,v) = if v > 0 then v else error "Not Complex"
+
+angleRem :: Float -> Float        --makes sure the sum/difference of 2 angles is within [0,2*pi]
+angleRem v 
+    | v > 2 * pi = v - 2 * pi
+    | v < 0 = v + 2 * pi
+    | otherwise = v
 
 toRec :: Complex -> Complex
 toRec z = makeRec (getRe z) (getIm z)
@@ -48,10 +52,10 @@ compSub :: Complex -> Complex -> Complex
 compSub z1 z2 = makeRec (getRe z1 - getRe z2) (getIm z1 - getIm z2) 
 
 compMult :: Complex -> Complex -> Complex
-compMult z1 z2 = makePol (getDist z1 * getDist z2) (getAngle z1 + getAngle z2)
+compMult z1 z2 = makePol (getDist z1 * getDist z2) (angleRem(getAngle z1 + getAngle z2))
 
 compDiv :: Complex -> Complex -> Complex
-compDiv z1 z2 = makePol (getDist z1 / getDist z2) (getAngle z1 - getAngle z2)
+compDiv z1 z2 = makePol (getDist z1 / getDist z2) (angleRem(getAngle z1 - getAngle z2))
 
 genCompList :: IntegerPair -> IntegerPair -> [Complex]
 genCompList p1 p2 = [('R',fromIntegral re, fromIntegral im)| re <- [fst p1 .. snd p1], im <- [fst p2 .. snd p2]]
@@ -59,7 +63,7 @@ genCompList p1 p2 = [('R',fromIntegral re, fromIntegral im)| re <- [fst p1 .. sn
 listToPol :: [Complex] -> [Complex]
 listToPol inList = [pol | threeTuple <- inList, let pol = makePol (getDist threeTuple) (getAngle threeTuple)]
 
-filterLengths :: Double -> [Complex] -> [Complex]
+filterLengths :: Float -> [Complex] -> [Complex]
 filterLengths k xs = [cplex | cplex <- xs, getDist cplex <= k]
 
 filterQuadrant :: Int -> [Complex] -> [Complex]
@@ -67,8 +71,10 @@ filterQuadrant m inList = [cplex | m>=1 && m<=4, cplex <- inList, isInQuadM cple
 
 isInQuadM :: Complex -> Int -> Bool
 isInQuadM z m
-    | getRe z > 0 && getIm z > 0 && m == 1 = True
-    | getRe z < 0 && getIm z > 0 && m == 2 = True
-    | getRe z < 0 && getIm z < 0 && m == 3 = True
-    | getRe z > 0 && getIm z < 0 && m == 4 = True
+    | re > 0 && im > 0 && m == 1 = True
+    | re < 0 && im > 0 && m == 2 = True
+    | re < 0 && im < 0 && m == 3 = True
+    | re > 0 && im < 0 && m == 4 = True
     | otherwise = False -- not inside any quad
+        where re = getRe z
+              im = getIm z
