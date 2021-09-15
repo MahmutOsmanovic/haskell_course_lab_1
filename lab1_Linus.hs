@@ -5,10 +5,9 @@ makeRec a b = ('R',a,b)
 
 makePol :: Float -> Float -> Cplex
 makePol r v
-    | v > 2 * pi = error "Angle greater than 2 * pi"
-    | v < 0 = error "Negative angle"
-    | r < 0 = error "Negative radius"
-    | otherwise = ('P',r,v)
+    | v > 2 * pi = ('P',abs r,v - 2 * pi)
+    | v < 0 = ('P',abs r,v + 2 * pi)
+    | otherwise = ('P',abs r,v)
 
 getRe :: Cplex -> Float
 getRe ('R',a,_) = a
@@ -39,28 +38,22 @@ getAngle ('P',_,v) = v
 getAngle _ = error "Not complex"
 
 toRec :: Cplex -> Cplex
-toRec c = ('R',getRe c,getIm c)
+toRec c = makeRec (getRe c) (getIm c)
 
 toPol :: Cplex -> Cplex
-toPol c = ('P',getDist c,getAngle c)
+toPol c = makePol (getDist c) (getAngle c)
 
 compAdd :: Cplex -> Cplex -> Cplex
-compAdd c1 c2 = ('R',getRe c1 + getRe c2,getIm c1 + getIm c2)
+compAdd c1 c2 = makeRec (getRe c1 + getRe c2) (getIm c1 + getIm c2)
 
 compSub :: Cplex -> Cplex -> Cplex
-compSub c1 c2 = ('R',getRe c1 - getRe c2,getIm c1 - getIm c2)
-
-angleRem :: Float -> Float        --makes sure the sum/difference of 2 angles is within [0,2*pi]
-angleRem v 
-    | v > 2 * pi = v - 2 * pi
-    | v < 0 = v + 2 * pi
-    | otherwise = v
+compSub c1 c2 = makeRec (getRe c1 - getRe c2) (getIm c1 - getIm c2)
 
 compMult :: Cplex -> Cplex -> Cplex
-compMult c1 c2 = ('P',getDist c1 * getDist c2,angleRem (getAngle c1 + getAngle c2))
+compMult c1 c2 = makePol (getDist c1 * getDist c2) (getAngle c1 + getAngle c2)
 
 compDiv :: Cplex -> Cplex -> Cplex
-compDiv c1 c2 = ('P',getDist c1 / getDist c2,angleRem (getAngle c1 - getAngle c2))
+compDiv c1 c2 = makePol (getDist c1 / getDist c2) (getAngle c1 - getAngle c2)
 
 genCompList :: Integral n => (n,n) -> (n,n) -> [Cplex]
 genCompList (a,b) (c,d) = if a > b || c > d then error "Invalid range/s" else [('R',fromIntegral x,fromIntegral y)| x <- [a..b], y <- [c..d]]
@@ -71,15 +64,5 @@ listToPol list = [ toPol t | t <- list]
 filterLengths :: Float -> [Cplex] -> [Cplex]
 filterLengths k xs = [ t | t <- xs, getDist t <= k]
 
-isInQuadrant :: Cplex -> Int -> Bool
-isInQuadrant c m 
-    | re > 0 && im > 0 && m == 1 = True
-    | re < 0 && im > 0 && m == 2 = True
-    | re < 0 && im < 0 && m == 3 = True
-    | re > 0 && im < 0 && m == 4 = True
-    | otherwise = False
-        where re = getRe c
-              im = getIm c
-
 filterQuadrant :: Int -> [Cplex] -> [Cplex]
-filterQuadrant m xs = [t | t <- xs, isInQuadrant t m == True]
+filterQuadrant m xs = [t | t <- xs, let angle = getAngle t in angle > (fromIntegral m - 1) * pi / 2 && angle < fromIntegral m * pi / 2]
