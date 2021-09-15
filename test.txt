@@ -1,0 +1,90 @@
+TEST COMMANDS:
+r1 = makeRec 1 3
+r2 = makeRec 2 (-3)
+p1 = makePol pi (pi/4)
+r1
+p1
+makePol 2 (-pi/2)
+getRe p1
+getRe ('M', 2.0, 1.0)
+getIm p1
+getAngle ('R',0,0)
+getAngle ('R',3,0)
+getAngle ('R',-3,0)
+getAngle ('R',3,1)
+getAngle ('R',-3,1)
+getAngle ('R',0,3)
+getAngle ('P',2,3)
+getAngle ('P',1,0)
+getAngle r1
+toRec p1
+toPol r2
+compAdd r1 r2
+compSub r1 p1
+compMult r1 p1
+xs = genCompList (-3,1) (-2,5)
+ys = listToPol (genCompList (-2,-1) (1,2))
+zs = listToPol (genCompList (-6,-5) (3,5))
+ls = xs ++ ys ++ zs
+filterLengths 2 ls
+filterQuadrant 1 ls
+filterQuadrant 3 ls
+filterQuadrant 4 ls
+
+OUTPUTS FROM GHCI:
+Haskell Interactive Shell (labOne.hs) λ r1 = makeRec 1 3
+Haskell Interactive Shell (labOne.hs) λ r2 = makeRec 2 (-3)
+Haskell Interactive Shell (labOne.hs) λ p1 = makePol pi (pi/4)
+Haskell Interactive Shell (labOne.hs) λ r1
+('R',1.0,3.0)
+Haskell Interactive Shell (labOne.hs) λ p1
+('P',3.1415927,0.7853982)
+Haskell Interactive Shell (labOne.hs) λ makePol 2 (-pi/2)
+('P',2.0,4.712389)
+Haskell Interactive Shell (labOne.hs) λ getRe p1
+2.2214415
+Haskell Interactive Shell (labOne.hs) λ getRe ('M', 2.0, 1.0)
+*** Exception: Invalid format. Correct format:
+        ('R' or 'P', float, float), R = Rectangular, P = Polar, with positive angle
+CallStack (from HasCallStack):
+  error, called at labOne.hs:15:11 in main:Main
+Haskell Interactive Shell (labOne.hs) λ getIm p1
+2.2214415
+Haskell Interactive Shell (labOne.hs) λ getAngle ('R',0,0)
+0.0
+Haskell Interactive Shell (labOne.hs) λ getAngle ('R',3,0)
+0.0
+Haskell Interactive Shell (labOne.hs) λ getAngle ('R',-3,0)
+3.1415927
+Haskell Interactive Shell (labOne.hs) λ getAngle ('R',3,1)
+0.32175055
+Haskell Interactive Shell (labOne.hs) λ getAngle ('R',-3,1)
+2.819842
+Haskell Interactive Shell (labOne.hs) λ getAngle ('R',0,3)
+1.5707964
+Haskell Interactive Shell (labOne.hs) λ getAngle ('P',2,3)
+3.0
+Haskell Interactive Shell (labOne.hs) λ getAngle ('P',1,0)
+0.0
+Haskell Interactive Shell (labOne.hs) λ getAngle r1
+1.2490457
+Haskell Interactive Shell (labOne.hs) λ toRec p1
+('R',2.2214415,2.2214415)
+Haskell Interactive Shell (labOne.hs) λ toPol r2
+('P',3.6055512,5.3003917)
+Haskell Interactive Shell (labOne.hs) λ compAdd r1 r2
+('R',3.0,0.0)
+Haskell Interactive Shell (labOne.hs) λ compSub r1 p1
+('R',-1.2214415,0.7785585)
+Haskell Interactive Shell (labOne.hs) λ compMult r1 p1
+('P',9.934588,2.0344439)
+Haskell Interactive Shell (labOne.hs) λ xs = genCompList (-3,1) (-2,5)
+Haskell Interactive Shell (labOne.hs) λ ys = listToPol (genCompList (-2,-1) (1,2))
+Haskell Interactive Shell (labOne.hs) λ zs = listToPol (genCompList (-6,-5) (3,5))
+Haskell Interactive Shell (labOne.hs) λ ls = xs ++ ys ++ zs
+Haskell Interactive Shell (labOne.hs) λ filterLengths 2 ls
+[('R',-2.0,0.0),('R',-1.0,-1.0),('R',-1.0,0.0),('R',-1.0,1.0),('R',0.0,-2.0),('R',0.0,-1.0),('R',0.0,0.0),('R',0.0,1.0),('R',0.0,2.0),('R',1.0,-1.0),('R',1.0,0.0),('R',1.0,1.0),('P',1.4142135,2.3561945)]
+Haskell Interactive Shell (labOne.hs) λ filterQuadrant 1 ls
+[('R',1.0,1.0),('R',1.0,2.0),('R',1.0,3.0),('R',1.0,4.0),('R',1.0,5.0)]
+Haskell Interactive Shell (labOne.hs) λ filterQuadrant 3 ls
+[('R',-3.0,-2.0),('R',-3.0,-1.0),('R',-2.0,-2.0),('R',-2.0,-1.0),('R',-1.0,-2.0),('R',-1.0,-1.0)]
